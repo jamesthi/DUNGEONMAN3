@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+  <html lang="en">
+    <head>
+		  <title>DUNGEONMAN 3</title>
+	</head>
+
+	<body>
+	
+	<img src="dungeonmap.png" height = "400" width = "600" />
+	
+<form action="" name="form1">
+    Congratulations on beating Dungeonman 3! Please enter your name and describe how difficult it was to finish this game. :) 
+    <p>
+        Name:
+        <input type="text" name="name" />
+    </p>
+    <p>
+        Why I decided to dedicate a good chunk of my life to finishing this game:
+        <input type="text" name="description" />
+    </p>	
+    <p>
+        <input type="button" value="Submit" name="btnCheckForm">
+    </p>
+</form>	
+	
+		<script>
+
+
+		//NPC LIST
+			var npcWitch;
+			var npcLog;
+			var npcBird;
+			var npcTroll;
+			var npcFarmer;
+			var npcFriar;
+			var npcCondimentGuy;
+			var npcPubBarkeep;
+			var npcKigalonian;
+
+		//ITEM LIST
+			var itemFlaskGlove;
+			var itemCoins;
+			var itemStein;
+			var itemMap;
+			var itemCorn;
+			var itemKetchup;
+			var itemBird;
+			var itemBone;
+
+		//STATUS LIST
+			var statusFlaskGloveOn = true; // DEBUG/TESTING VARIABLE SET TO TRUE 
+			var statusFakeBloodOn = false;
+			var statusReachedForFlask = false;
+			var statusHandsFree = false;
+			var statusWallsClosing = true;
+			var statusTroll = true;
+			var statusMetKiga = false;
+			var statusStoleStein = false;
+
+		//REGULAR EXPRESSIONS
+
+			var read = /read/g*/
+
+
+			var gameover = false;
+		// All locations: Dungeon, Sanctum, Crossroads, Woods, HagClearing, MonasteryOut, MonasteryIn, MonasteryPot, Overlook, Streets, Tavern, Pub, Sammich, Bridge, Clearing
+			var currLocation = "Dungeon";
+			var items = [];
+
+			//var userPrompt = prompt(currLocation);
+
+
+
+        function btnCheckFormClick(e) {
+            var name = myForm.name;
+			var description = myForm.description;
+
+            if (name.value == "" && description.value == "") {
+                alert("Please complete the form! Don't you want to be immortalized in this game's history?");
+            } 
+			else if (name.value == "")
+				alert("You have a name...right?");
+			else if (description.value == "")
+				alert("I won't accept a no on the description.");
+			else {
+                alert("Thanks for completing the form!");
+				document.write("Here stands the great " + name.value + ".....and he says...'" + description.value + "'");
+
+
+
+            }
+        }
+		
+		alert("This is a story based game. When the game prompts you...try to GET things, USE things, FIND things, SEARCH things or TALK to people. The keywords will be capitalized within the story. Use NORTH, SOUTH, EAST, WEST to move between rooms. Type INV or INVENTORY to check what you carry. And please type everything in all lower case. Good luck!"); 
+			
+		while(false)
+		{
+			if (gameover)
+				break;
+
+			// Switch case to formulate the prompt
+			switch(currLocation){
+
+				case "Dungeon":
+					if (statusWallsClosing == false)
+						userPrompt = "DUNGEON \n \n Ye find yeself inside yon dungeon. Thou seest a dead dongrel with sharp CLAWS. Obvious exists are NORTH. \n \n What wouldst thou deaux?";
+					else if (statusHandsFree == true && items.toString().search("Bone") > -1)
+						userPrompt = "DUNGEON \n \n Ye find yeself inside yon dungeon, almost crush'd! Quickst! Doost something! Thou seest a dead dongrel with sharp CLAWS. \n \n What wouldst thou deaux?";
+					else if (statusHandsFree == true)
+						userPrompt = "DUNGEON \n \n Ye find yeself inside yon dungeon, thy spiked walls drawst ever nearer. Thou seest a dead dongrel with sharp CLAWS. There be a BONE dost be layabouts. \n \n What wouldst thou deaux?";
+					else
+						userPrompt = "DUNGEON \n \n Ye find yeself inside yon dungeon with thy dungeonhands bound behindeth thee, and thy closing spiked walls doth threaten to crusheth thee. Thou seest a dead dongrel with sharp CLAWS. There be a BONE dost be layabouts. \n \n What wouldst thou deaux?";
+					break;
+
+				case "Sanctum":
+					if (statusReachedForFlask == true)
+						userPrompt = "SANCTUM \n \n Ye done died. Perhaps ye should have been wearing some sort of GLOVE to handle such magical object, ye idiotst";
+					else if (statusReachedForFlask == false)
+						userPrompt = "SANCTUM \n \n Ye walks into thy inner sanctum, and ye see a magical FLASK which sits upon the altar. Obvious Exits are SOUTH. \n \n What wouldst thou deaux?";
+					break;
+
+				case "Crossroads":
+					userPrompt = "CROSSROADS \n \n Ye finds yonself at an intersection of paths diverging NORTH, SOUTH, EAST, and WEST. There is a SIGN nearby which says: \nNORTH: Monastery \nSOUTH: Bridge - beware of troll!! \nEAST: Westerburg Village \nWEST: Scary Woods \n \n What wouldst thou deaux?";
+					break;
+
+				case "Woods":
+					//if (itemCoins == false)
+					//	userPrompt = "IN THE WOODS \n \n  You are in some scary ass woods. A creepy LOG stares at you. A path leads back to the crossroads EAST. \n \n What wouldst thou deaux?" ;// add the details Jason idk how you want to word everything
+					//else if (itemCoins == true)
+					//	userPrompt = " IN THE WOODS \n \n "; // add
+					//else userPrompt = "IN THE WOODS \n \n "
+
+					if (items.toString().search("Map") > -1)
+						userPrompt = "IN THE WOODS \n \n Ye find yeself in the wooded forest. These are some seriously thickly-thuckled woods. With the map, a new path deep into the woods becomes clear to you to the WEST. A creepy LOG stares at you. A path leads back to the crossroads EAST. \n \n What wouldst thou deaux?";// add the details Jason idk how you want to word everything
+					else
+						userPrompt = "IN THE WOODS \n \n  Ye find yeself in the wooded forest. These are some seriously thickly-thuckled woods. A creepy hollow LOG stares at you. A path leads back to the crossroads EAST. \n \n What wouldst thou deaux?";// add the details Jason idk how you want to word everything
+					break;
+
+				case "HagClearing":
+					userPrompt = "WOODED CLEARING \n \n You find yourself in a small clearing. In the center is a dirty looking HAG. A path back out is to the EAST. \n \n What wouldst thou deaux?";
+					
+					//if(statusFakeBloodOn == false)
+					//	userPrompt = "HAGCLEARING \n \n "// add
+					//else if(statusFakeBloodOn == true)
+					//	userPrompt = "HAGCLEARING \n \n " // add
+					break;
+
+				case "MonasteryOut":
+					if (items.toString().search("Bird") > -1)
+						userPrompt = "OUTSIDE THE MONASTERY \n \n You see a beautiful monastery up NORTH. A path leads back to the crossroads SOUTH. \n \n What wouldst thou deaux?";
+					else 
+						userPrompt = "OUTSIDE THE MONASTERY \n \n You see a beautiful monastery up NORTH. A path leads back to the crossroads SOUTH. An annoying BIRD chirps next to you. \n \n What wouldst thou deaux?";
+					break;
+
+				case "MonasteryIn":
+					if (statusStoleStein == true) {
+						alert("Ye struts back into the monastery and Count Chubbsalot strikes thee upon yon stupid dungeonhead again. As ye drift away ye wonder if he will make ye into a tasty dungeonstew. Or perhaps Dungeon Broulee? You will never know. You are dead.");
+						break;
+					}
+					else
+						userPrompt = "INSIDE THE MONASTERY \n \n A very fat MONK stares at you with big beady eyes. Upon the table sits a large and tasty STEIN.";
+					break;
+
+				case "MonasteryPot":
+					userPrompt = "INSIDE THE MONK'S POT \n \n Ye wake up to Fat, Fat, Friar staring hungrily at you as he bites off bits of carrots and spits them next to you. Oh, also, ye still have the STEIN. Apparently that wasn't what he was after. The entrance to the Monastery 'tis SOUTH. \n \n What wouldst thou deaux?";
+					break;
+
+				case "Overlook":
+					if (items.toString().search("Corn") == -1)
+						userPrompt = "COUNTRYSIDE \n \n You are at a hill overlooking the village to the EAST. A path to the crossroads lays WEST. A merchant screams in your ear to buy his CORN. \n \n What wouldst thou deaux?";
+					else	
+						userPrompt = "COUNTRYSIDE \n \n You are at a hill overlooking the village to the EAST. A path to the crossroads lays WEST. \n \n What wouldst thou deaux?";
+					break;
+
+				case "Streets":
+					userPrompt = "TOWN STREETS \n \n You find yourself in the middle of Westerburg. A busy tavern lays to the NORTH. A small sandwich shoppe to the EAST. A lonely pub to the SOUTH. The road back to the crossroads to the WEST. \n \n What wouldst thou deaux?";
+					break;
+
+				case "Tavern":
+					userPrompt = "TAVERN \n \n The tavern is a very busy and noisy place. Without knowing the NAME of the person you're looking for, you'll never FIND anyone. The tavern exit is to the SOUTH. \n \n What wouldst thou deaux?";
+					break;
+
+				case "Pub":
+					userPrompt = "PUB \n \n The pub is a very quiet place. The only person in the room is the BARTENDER, slowly wiping a mug. The exit is to the NORTH. \n \n What wouldst thou deaux?";
+					break;
+
+				case "Sammich":
+					userPrompt = "SAMMICH SHOPPE \n \n 'YE OLDE SAMMICH SHOPPE' appears to be closed today. The road back is to the WEST. There is a man cleaning the floors. He looks up and says 'Sorry mate, we're closed today.' Ye check thy dayrunner and it is indeed today. 'However if there is any specific CONDIMENT, you need but to ask for it. CONDIMENTS only. Ask for.' \n \n What wouldst thou deaux?";
+					break;
+
+				case "Bridge":
+					if (statusTroll)
+					{
+						userPrompt = "BRIDGE \n \n You stand at an old stone bridge. A big ugly troll blocks your path and stares at you menacingly. The crossroads are back to the NORTH. \n \n What wouldst thou deaux?";
+					}
+					else
+						userPrompt = "BRIDGE \n \n You stand at an old stone bridge. The bridge continues to the SOUTH. The crossroads are back to the NORTH. \n \n What wouldst thou deaux?";
+					break;
+
+				case "Clearing":
+					userPrompt = "CLEARING \n \n You stand at an open clearing. You see a mysterious TRAPDOOR in the ground. The path back to the bridge is to the NORTH. \n \n What wouldst thou deaux?";
+					break;
+
+			}
+				
+
+
+
+
+			var input = prompt(userPrompt);
+
+
+
+			// Inputs to test regardless of location
+			if (input == "inv" || input == "inventory")
+			{	var itemlist = "";
+				// var itemlist = //what is the command to print out all items in an array
+				if (items.length == 0)
+					alert("You have nothing to your name :(");
+				else
+					alert("Your inventory contains: " + items.toString());
+					
+				//var result = items.toString().search("Bone");
+				//alert(result);
+			}
+			else if ((input == "put on glove" || input == "put glove on")&& items.toString().search("Glove") > -1)
+			{
+				alert("You put the glove on your hand. You feel more powerful. Almost as if... you could grab something magical.");
+				statusFlaskGloveOn = true;
+			}
+			else if (input == "put ketchup on head" && items.indexOf("Ketchup") > -1)
+			{
+				alert("You squeeze some ketchup out onto your head. It looks a little like blood.");
+				statusFakeBloodOn = true;
+				
+			}
+			else // Otherwise use location
+			{
+				switch(currLocation){
+
+					case "Dungeon":
+						if (input == "get" && input == "bone" && statusHandsFree == false)
+								alert("Ye cannot just \"GET BONE\", thy hands art bound behindeth thee.");
+						else if (input == "use claws")
+							{
+								alert("Now that's using thy dungeonsmarts! Ye shimmies up to the dead dongrel and cut thy ties that bind. Thou art free!");
+								statusHandsFree = true;
+							}
+						else if (input == "get bone" && statusHandsFree == true && items.toString().search("Bone") == -1)
+							{
+								alert("Ye now havest a bone. Good job.");
+								items.push("Bone");
+							}
+						else if (input == "get bone" && statusHandsFree == true && items.toString().search("Bone") > -1)
+							{
+								alert("Dawg you already got the bone.");
+							}
+						else if (input == "use bone" && items.toString().search("Bone") > -1)
+							{
+								alert("Ye waits for just the right moment and jam thy bone betwixt the walls. Ye hears a grunkle and grind and the walls scrunch to a halt! Hooray! The walls retract and thou sees the doorway to the NORTH is now open.");
+								//itemBone = false;
+								statusWallsClosing = false;
+							}
+						else if ((input == "north" || input == "go north" || input == "walk north") && statusWallsClosing == false) // input = north and bone has been used?
+							{
+								alert("Ye walk into the SANCTUM");
+								currLocation = "Sanctum";
+							}
+						else if (input == "south" || input == "go south" || input == "walk south" || input == "east" || input == "go east" || input == "walk east" || input == "west" || input == "go west" || input == "walk west") // do we want to do this? //yes
+							{
+								alert("You can't go that way.");
+							}
+						else if (input == "look") {}
+						else
+							alert("I don't understand what you're saying.");
+
+						break;
+
+
+					case "Sanctum":
+						if ((input == "get flask" || input == "get ye flask") && statusFlaskGloveOn == false)
+						{
+							alert("Ye reach for the FLASK and...");
+							alert("VOIP!!!");
+							currLocation = "Crossroads";
+						}
+						else if ((input == "get flask" || input == "get ye flask") && statusFlaskGloveOn == true)
+						{
+							alert("Ye reach for the FLASK and...");
+							alert("YOU GRAB IT! The flask is actually a PORTKEY and you're whisked to Hogwarts....");
+							alert("To be continued...?");
+							gameover = true;
+						}
+						else if (input == "south" || input == "go south" || input == "walk south")
+							{
+								alert("you go south");
+								currLocation = "Dungeon";
+							}
+						else if (input == "north" || input == "go north" || input == "walk north" || input == "east" || input == "go east" || input == "walk east" || input == "west" || input == "go west" || input == "walk west")
+							{
+								alert("You can't go that way.");;
+						}
+						else if (input == "look") {}
+						else
+							alert("I don't understand what you're saying.");
+						break;
+
+					case "Crossroads":
+						if (input == "west" || input == "go west" || input == "walk west")
+						{
+							alert("Ye walk WEST to yon FOREST.");
+							currLocation = "Woods";
+						}
+						else if (input == "east" || input == "go east" || input == "walk east")
+						{
+							alert("Ye walk EAST towards WESTERBURG.");
+							currLocation = "Overlook";
+
+						}
+						else if (input == "north" || input == "go north" || input == "walk north")
+						{
+							alert("Ye walk NORTH towards yon MONASTERY.");
+							currLocation = "MonasteryOut";
+
+						}
+						else if (input == "south" || input == "go south" || input == "walk south")
+						{
+							alert("Ye walk SOUTH to yon BRIDGE.");
+							currLocation = "Bridge";
+						}
+						//else if (input == "look sign" || input == "sign")
+						//{
+						//	alert("The sign reads: \n \nNORTH: Monastery \nSOUTH: Bridge - beware of troll!! \nEAST: Westerburg Village \nWEST: Uncharted territory");
+						//}
+						else if (input == "look") {}
+						else
+							alert("I don't understand what you're saying.");
+						break;
+
+					case "Woods":
+						if (input == "search log" && items.toString().search("Coins") == -1)
+							{
+								alert("You peek your head inside the log and see some shiny COINS. Your nosyness has been rewarded! You pocket the change."); // add
+								items.push("Coins");
+								//itemCoins = true;
+							}
+						else if (input == "search log" && items.toString().search("Coins") > -1)
+							{
+								alert("You've already jacked all the coins. Stop being so greedy.");							
+							}
+						else if ((input == "west" || input == "go west" || input == "walk west") && items.toString().search("Map") == -1)
+							{
+								alert("You can't see anything this way.");
+							}
+						else if (i(input == "west" || input == "go west" || input == "walk west") && items.toString().search("Map") > -1)
+							{
+								alert("You venture deep into the woods, following the map."); // add
+								currLocation = "HagClearing";
+							}
+						else if (input == "east" || input == "go east" || input == "walk east")
+							{
+								alert ("You head EAST to the CROSSROADS."); // add
+								currLocation = "Crossroads";
+							}
+						else if (input == "north" || input == "go north" || input == "walk north" || input == "south" || input == "go south" || input == "walk south")
+							{
+								alert("You can't go that way.");;
+						}
+						else
+							alert("I don't understand what you're saying.");
+						break;
+
+					case "HagClearing":
+						if (input == "talk to hag" && statusFakeBloodOn == false)
+						{
+							alert("The hag screams at you. 'DON'T TALK TO ME! I only talk to and confide in the ghost of my husband. He died from a head injury. I can still remember his BLOODY HEAD as if it were yesterday...'");
+						}
+						else if (input == "talk to hag" && statusFakeBloodOn == true && items.toString().search("Glove") == -1)
+						{
+							alert("The hag stops and stares at you. 'Hagrid, my dear, is that you?' IS THAT YOU HAGRID?");
+							alert("The hag cries and falls into your arms. 'My dear, you forgot to take your magical GLOVE. .");
+							items.push("Glove");
+						}
+						else if (input == "talk to hag" && items.toString().search("Glove") > -1)
+						{
+							alert("The hag stares at you lovingly. 'Yes, Hagrid? What is it you need my love?'");						
+						}
+						else if (input == "east" || input == "go east" || input == "walk east")
+						{
+							alert("You travel EAST towards the crossroads.");
+							currLocation = "Woods";
+						}
+						else	
+							alert("I don't understand what you're saying.");
+						break;
+					case "MonasteryOut":
+						if (input == "north" || input == "go north" || input == "walk north")
+						{
+							alert("You head north into the monastery.");
+							currLocation = "MonasteryIn";
+						}
+						else if (input == "south" || input == "go south" || input == "walk south") {
+							alert("You head south back towards the crossroads.");
+							currLocation = "Crossroads";
+						}
+						else if (input == "feed bird" || input == "give corn to bird" && items.indexOf("Corn") > -1 && items.indexOf("Bird") < 0) { //Feed bird and you have corn
+							alert("Ye take the corn out of yon ear and feed it to the bird. Why ye keeps corn in yon ear, ye will never know. Anyway, the bird seems to like it! Ye've made a new friend. Acquired: BIRD");
+							items.push("Bird");
+						}
+						else if (input == "give corn") {
+							alert("Ye gives some of the CORN to thyself. Thanks thyself!");
+						}
+						else if (input == "feed bird" && items.indexOf("Corn") < 0 && items.indexOf("Bird") < 0) {
+							alert("How do you expect to feed the BIRD without any food?");
+						}
+						else
+							alert("I don't understand what you're saying.");
+						break;
+
+					case "MonasteryIn":
+						if (input == "take stein" || input == "get stein") {
+							alert("'FOOD!!' The monk screams as he bashes ye across ye dungeonhead with a club.");
+							items.push("Stein");
+							statusStoleStein = true;
+							currLocation = "MonasteryPot";
+						}
+						break;
+
+					case "MonasteryPot":
+						if (input == "south" || input == "go south" || input == "walk south")
+						{
+							alert("Ye jump out of the pot and scurry out of the monastery. 'Go south, who-da-thunk-it?', ye thunks. Ye are never going back there again.");
+							currLocation = "MonasteryOut";
+						}
+						else if (input == "north" || input == "go north" || input == "walk north" || input == "east" || input == "go east" || input == "walk east"|| input == "west" || input == "go west" || input == "walk west")
+						{
+							alert("You can't go that way.");
+						}
+						else
+							alert("I don't understand what you're saying.");
+						break;
+
+					case "Overlook":
+						if (input == "talk" || input == "talk man" || input == "talk merchant")
+							alert("'Well good mornin' to ye. I've got the CORN if ye've got the COINS.' Ye ask him about any dungeons around these parts. 'Dungeons? Why I think I saw one a couple 'SOUTH's south of the crossroads!'");
+						else if (input == "buy corn" && items.toString().search("Coins") == -1)
+						{
+							alert("How do you expect to pay for the CORN without any COINS?");
+						}
+						else if (input == "buy corn" && items.toString().search("Corn") > -1)
+						{
+							alert("Ye bought some already. Why do ye need so much CORN?");						
+						}
+						else if (input == "buy corn" || input == "give coins" && items.toString().search("Coins") > -1)
+						{
+							alert("You give the Vegetable Cart Vender, or VCV as you've started calling him, a nondescript amount of COINS in exchange for CORN just so he shuts up.");
+							items.push("Corn");
+						}
+
+						else if (input == "east") {
+							alert("You head EAST into the town.");
+							currLocation = "Streets";
+						}
+						else if (input == "west") {
+							alert("You head WEST to the crossroads.");
+							currLocation = "Crossroads";
+						}
+						else
+							alert("I don't understand what you're saying.");
+						break;
+
+					case "Streets":
+						if (input == "north") {
+							alert("Ye walk up the street to the Tavern.");
+							currLocation = "Tavern";
+							}
+						else if (input == "east") {
+							alert("Ye walk east to the Sandwich Shoppe.");
+							currLocation = "Sammich";
+							}
+						else if (input == "south" || input == "go south" || input == "walk south") {
+							alert("Ye walk down the street to the Pub.");
+							currLocation = "Pub";
+							}
+						else if (input == "west") {
+							alert("Ye walk west to the countryside.");
+							currLocation = "Overlook";
+							}
+						else if (input == "look") {}
+						else
+							alert("I don't understand what you're saying.");
+						break;
+
+					case "Tavern":
+						if (input == "find kigalonian" || input == "talk kigalonian" || input == "kigalonian" && statusMetKiga == false) {
+							alert("The entire tavern goes quiet as they hear you utter that name. The crowd parts and you see a tough looking guy in the back. Kigalonian!");
+							alert("Kigalonian walks up to you. 'Ahha, I see old Pub Barkeep sent ye!' The pub barkeeps name is Pub Barkeep...?");
+							alert("Here take this dumb map I found. It'll take you to someone who may be able to help ye. There's your quest, laddie.");
+							alert("Kigalonian disappears back into the jaunty crowd.");
+							statusMetKiga = true;
+							items.push("Map");
+						}
+						else if (input == "find kigalonian" || input == "talk kigalonian" || input == "kigalonian" && statusMetKiga == true) {
+							alert("Kigalonian has disappeared. You doubt you'll ever see him again.");
+						}
+						else if (input == "south" || input == "go south" || input == "walk south") {
+							alert("You exit the tavern.");
+							currLocation = "Streets";
+							}
+						else if (input == "drink beer")
+						{
+							alert("There's no beer here. What do you think this is, a pub?");
+						}
+						else	
+							alert("I don't understand what you're saying.");
+						break;
+
+					case "Pub":
+						if (input == "talk bartender" || input == "talk" || input == "talk man" || input == "talk person")
+						{
+							alert("You strike up a convo with the bartender. 'Sorry, mate. Fresh out of food. Some doddering footlicker came and took all the food, but if ye have a STEIN I'll give ye a free drink.'");
+						}
+						else if (input == "give stein" && items.toString().search("Stein") > -1)
+							alert("Ye give the bartender the STEIN, and in return hands you a tankard full of what ye are sure of is dongrel pee. After a couple sips ye asks the barkeep if he's seen any dungeons lately. He looks shiftily around the bar even though it's completely empty. 'Gotta be careful what ye says around 'ere's, love. If I were ye I'd go talk to KIGALONIAN up NORTH at the TAVERN.' Did he just call you 'Love'?");
+						else if (input == "give stein" && items.toString().search("Stein") == -1)
+							alert("Ye checks ye dungeonpockets for a STEIN. Ye has none.");
+						else if (input == "north")
+						{
+							alert("You exit the pub.");
+							currLocation = "Streets";
+						}
+						else	
+							alert("I don't understand what you're saying.");
+						break;
+
+					case "Sammich":
+						if (input == "ketchup" && items.toString().search("Ketchup") < 0)
+						{
+							alert("The man goes in and comes out with some KETCHUP packets. 'Here you go!'");
+							items.push("Ketchup");
+						}
+						else if (input == "ketchup" && items.toString().search("Ketchup") > -1)
+						{
+							alert("The man looks up. 'Didn't I just give you some ketchup?'");
+						}
+						else if (input == "mustard" || input == "relish" || input == "mayonnaise" || input == "ranch" || input == "salt" || input == "pepper" || input == "cheese")
+						{
+							alert("'Ah, looks like we don't have any of that', the man says. 'We got some KETCHUP, though.'");
+						}
+						else if (input == "west")
+						{
+							alert("You travel back to the streets.");
+							currLocation = "Streets";
+						}
+						else
+							alert("I don't understand what you're saying.");
+						break;
+
+					case "Bridge":
+						if (input == "use bird" && items.toString().search("Bird") > -1) 
+						{
+							alert("Ye sic your newly acquired bird onto the troll. The bird begins thrashing around the troll's hair. 'Nooo, my style!!!' says the troll. Ashamed, he jumps into the river and disappears.");
+							statusTroll = false;
+						}
+						else if (input == "south" || input == "go south" || input == "walk south" && statusTroll == true)
+						{
+							alert("The troll growls at you and refuses to let you pass.");
+						}
+						else if (input == "south" || input == "go south" || input == "walk south" && statusTroll == false)
+						{
+							alert("You head SOUTH.");
+							currLocation = "Clearing";
+						}
+						else if (input == "north")
+						{
+							alert("You head NORTH to the crossroads.");
+							currLocation = "Crossroads";
+						}
+						
+						else
+							alert("I don't understand what you're saying.");
+						break;
+
+					case "Clearing":
+						if (input == "open trapdoor" || input == "use trapdoor")
+						{
+							alert("You open the trapdoor and descend into the depths. Hey, this looks familiar....");
+							currLocation = "Sanctum";
+						}
+						else if (input == "north")
+						{
+							alert("You head NORTH to the bridge.");
+							currLocation = "Bridge";
+						}
+						else
+							alert("I don't understand what you're saying.");
+						break;
+
+				}
+
+			}
+
+
+		}
+			
+		alert("Congratulations on finishing the game!");
+		
+		myForm.btnCheckForm.addEventListener("click", btnCheckFormClick);
+
+
+
+
+
+
+
+		  </script>
+    </body>
+</html>
